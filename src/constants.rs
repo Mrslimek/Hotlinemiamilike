@@ -9,9 +9,17 @@ pub const ATTACK_COOLDOWN: f32 = 0.5;
 pub const ENEMY_DAMAGE_RANGE: f32 = 40.0;
 
 pub const BACKGROUND_COLOR: Color = Color::srgb(0.05, 0.05, 0.05);
-pub const PLAYER_COLOR: Color = Color::srgb(0.95, 0.3, 0.2); // pink/red
-pub const ENEMY_COLOR: Color = Color::srgb(0.3, 0.3, 0.95); // Blue
+// TODO: Decide whether these colors are still needed after switching to PNG sprites
+// pub const PLAYER_COLOR: Color = Color::srgb(0.95, 0.3, 0.2);
+// pub const ENEMY_COLOR: Color = Color::srgb(0.3, 0.3, 0.95);
 pub const GROUND_COLOR: Color = Color::srgb(0.15, 0.15, 0.15);
+pub const WALL_COLOR: Color = Color::srgb(0.55, 0.45, 0.35);
 
 //NOTE: This will be state for the first level
 pub const ENEMY_COUNT: i32 = 5;
+
+// Room (box with 4 entrances) constants
+pub const ROOM_HALF_SIZE: f32 = 150.0;
+pub const WALL_THICKNESS: f32 = 12.0;
+// Half-width of each doorway opening
+pub const DOOR_HALF_WIDTH: f32 = 25.0;

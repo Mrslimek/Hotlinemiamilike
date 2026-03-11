@@ -1,3 +1,4 @@
+mod collision;
 mod components;
 mod constants;
 mod enemy;
@@ -10,6 +11,7 @@ mod utils;
 
 use bevy::prelude::*;
 
+use crate::collision::{enemy_wall_collision, player_wall_collision};
 use crate::constants::{BACKGROUND_COLOR, ENEMY_COUNT};
 use crate::enemy::{enemy_ai, enemy_damage};
 use crate::player::{player_attack, player_movement};
@@ -40,6 +42,9 @@ fn main() {
                 cleanup_dead_entities,
                 check_restart_button,
                 check_game_state,
+                // Collision resolution runs after movement systems
+                player_wall_collision.after(player_movement),
+                enemy_wall_collision.after(enemy_ai),
             ),
         )
         .run();
