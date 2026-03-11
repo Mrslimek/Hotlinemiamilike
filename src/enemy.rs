@@ -45,6 +45,7 @@ pub fn enemy_damage(
     enemy_query: Query<(&Transform, &Enemy), Without<Player>>,
     all_entities: Query<Entity, With<GameEntity>>,
     text_screen_query: Query<&TextScreen>,
+    asset_server: Res<AssetServer>,
 ) {
     // Don't process damage if game is over
     if game_state.game_over {
@@ -78,7 +79,7 @@ pub fn enemy_damage(
                 player.health -= 1;
 
                 if player.health <= 0 && !game_state.victory && text_screen_query.count() == 0 {
-                    restart_game(&mut commands, &mut game_state, all_entities);
+                    restart_game(&mut commands, &mut game_state, all_entities, &asset_server);
                 }
             }
         }

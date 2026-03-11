@@ -30,9 +30,10 @@ pub fn check_restart_button(
     mut commands: Commands,
     mut game_state: ResMut<GameState>,
     keyboard: Res<ButtonInput<KeyCode>>,
+    asset_server: Res<AssetServer>,
     all_entities: Query<Entity, With<GameEntity>>,
 ) {
     if keyboard.just_pressed(KeyCode::KeyR) {
-        restart_game(&mut commands, &mut game_state, all_entities);
+        restart_game(&mut commands, &mut game_state, all_entities, &asset_server);
     }
 }
