@@ -42,9 +42,10 @@ pub fn player_attack(
     q_windows: Single<&Window, With<PrimaryWindow>>,
     time: Res<Time>,
     game_state: ResMut<GameState>,
-    _commands: Commands,
+    mut commands: Commands,
     player_query: Single<(Entity, &Transform, &mut AttackCooldown), With<Player>>,
     mut enemy_query: Query<(Entity, &Transform, &mut Enemy)>,
+    asset_server: Res<AssetServer>,
 ) {
     if game_state.game_over {
         return;
@@ -56,6 +57,9 @@ pub fn player_attack(
 
     if mouse.just_pressed(MouseButton::Left) && cooldown.0.is_finished() {
         cooldown.0.reset();
+
+        // Play attack sound
+        commands.spawn(AudioPlayer::new(asset_server.load("player_attack.ogg")));
 
         let window = q_windows.into_inner();
 

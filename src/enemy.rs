@@ -78,6 +78,9 @@ pub fn enemy_damage(
                 game_state.damage_timer = 0.0;
                 player.health -= 1;
 
+                // Play hit sound when enemy damages player
+                commands.spawn(AudioPlayer::new(asset_server.load("enemy_hit.ogg")));
+
                 if player.health <= 0 && !game_state.victory && text_screen_query.count() == 0 {
                     restart_game(&mut commands, &mut game_state, all_entities, &asset_server);
                 }
