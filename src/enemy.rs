@@ -43,6 +43,7 @@ pub fn enemy_damage(
     mut commands: Commands,
     player_query: Single<(Entity, &Transform, &mut Player)>,
     enemy_query: Query<(&Transform, &Enemy), Without<Player>>,
+    ldtk_enemies_query: Query<Entity, With<Enemy>>,
     all_entities: Query<Entity, With<GameEntity>>,
     text_screen_query: Query<&TextScreen>,
     asset_server: Res<AssetServer>,
@@ -82,7 +83,13 @@ pub fn enemy_damage(
                 commands.spawn(AudioPlayer::new(asset_server.load("enemy_hit.ogg")));
 
                 if player.health <= 0 && !game_state.victory && text_screen_query.count() == 0 {
-                    restart_game(&mut commands, &mut game_state, all_entities, &asset_server);
+                    restart_game(
+                        &mut commands,
+                        &mut game_state,
+                        all_entities,
+                        ldtk_enemies_query,
+                        &asset_server,
+                    );
                 }
             }
         }

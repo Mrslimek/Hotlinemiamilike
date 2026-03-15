@@ -12,7 +12,6 @@ mod utils;
 use bevy::prelude::*;
 
 use crate::collision::{enemy_wall_collision, player_wall_collision};
-use crate::constants::{BACKGROUND_COLOR, ENEMY_COUNT};
 use crate::enemy::{enemy_ai, enemy_damage};
 use crate::player::{player_attack, player_movement};
 use crate::resources::GameState;
@@ -23,12 +22,11 @@ use crate::ui::check_game_state;
 fn main() {
     App::new()
         .add_plugins(DefaultPlugins)
-        .insert_resource(ClearColor(BACKGROUND_COLOR))
         .insert_resource(GameState {
-            enemies_remaining: ENEMY_COUNT,
             game_over: false,
             victory: false,
             damage_timer: 0.0,
+            enemies_remaining: 0,
         })
         .add_systems(Startup, setup)
         .add_systems(
@@ -36,6 +34,7 @@ fn main() {
             (
                 player_movement,
                 player_attack,
+                // TODO: we should rename this to match "player_movement" fn naming style for better readability
                 enemy_ai,
                 enemy_damage,
                 update_attack_cooldowns,
