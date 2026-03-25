@@ -2,13 +2,14 @@ use bevy::{prelude::*, window::PrimaryWindow};
 
 use crate::{
     components::{AttackCooldown, Enemy, Player},
-    constants::{ATTACK_RANGE, PLAYER_SPEED},
     resources::GameState,
+    settings::GameSettings,
 };
 
 pub fn player_movement(
     keyboard: Res<ButtonInput<KeyCode>>,
     time: Res<Time>,
+    settings: Res<GameSettings>,
     query: Single<&mut Transform, With<Player>>,
 ) {
     let mut transform = query.into_inner();
@@ -32,7 +33,7 @@ pub fn player_movement(
         direction = direction.normalize();
     }
 
-    let movement = direction * PLAYER_SPEED * time.delta().as_secs_f32();
+    let movement = direction * settings.PLAYER_SPEED * time.delta().as_secs_f32();
     transform.translation.x += movement.x;
     transform.translation.y += movement.y;
 }
@@ -42,6 +43,7 @@ pub fn player_attack(
     q_windows: Single<&Window, With<PrimaryWindow>>,
     time: Res<Time>,
     game_state: ResMut<GameState>,
+    settings: Res<GameSettings>,
     mut commands: Commands,
     player_query: Single<(Entity, &Transform, &mut AttackCooldown), With<Player>>,
     mut enemy_query: Query<(Entity, &Transform, &mut Enemy)>,
@@ -77,11 +79,12 @@ pub fn player_attack(
                     - player_transform.translation.truncate();
                 let distance = to_enemy.length();
 
-                if distance <= ATTACK_RANGE {
+                if distance <= settings.ATTACK_RANGE {
                     let dot_product = to_enemy.normalize_or_zero().dot(attack_direction);
 
                     if dot_product > 0.0 {
                         enemy.health -= 1;
+                        info!("Enemy hit! Health: {}", enemy.health);
                     }
                 }
             }

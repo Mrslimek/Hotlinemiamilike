@@ -2,14 +2,15 @@ use bevy::prelude::*;
 
 use crate::{
     components::{Enemy, GameEntity, Player, TextScreen},
-    constants::{ENEMY_DAMAGE_RANGE, ENEMY_SPEED},
+    messages::{EnemyKilled, PlayerDamaged},
     resources::GameState,
-    utils::restart_game,
+    settings::GameSettings,
 };
 
 pub fn enemy_ai(
     time: Res<Time>,
     game_state: Res<GameState>,
+    settings: Res<GameSettings>,
     player_query: Single<&Transform, With<Player>>,
     mut enemy_query: Query<(&mut Transform, &Enemy), Without<Player>>,
 ) {
@@ -28,7 +29,7 @@ pub fn enemy_ai(
 
             if to_player != Vec2::ZERO {
                 let direction = to_player.normalize();
-                let movement = direction * ENEMY_SPEED * time.delta().as_secs_f32();
+                let movement = direction * settings.ENEMY_SPEED * time.delta().as_secs_f32();
 
                 enemy_transform.translation.x += movement.x;
                 enemy_transform.translation.y += movement.y;
@@ -40,13 +41,15 @@ pub fn enemy_ai(
 pub fn enemy_damage(
     time: Res<Time>,
     mut game_state: ResMut<GameState>,
+    settings: Res<GameSettings>,
     mut commands: Commands,
     player_query: Single<(Entity, &Transform, &mut Player)>,
-    enemy_query: Query<(&Transform, &Enemy), Without<Player>>,
-    ldtk_enemies_query: Query<Entity, With<Enemy>>,
+    enemy_query: Query<(Entity, &Transform, &Enemy), Without<Player>>,
     all_entities: Query<Entity, With<GameEntity>>,
     text_screen_query: Query<&TextScreen>,
     asset_server: Res<AssetServer>,
+    mut enemy_killed_events: MessageWriter<EnemyKilled>,
+    mut player_damaged_events: MessageWriter<PlayerDamaged>,
 ) {
     // Don't process damage if game is over
     if game_state.game_over {
@@ -59,10 +62,16 @@ pub fn enemy_damage(
         return;
     }
 
-    for (enemy_transform, enemy) in enemy_query.iter() {
+    for (entity, enemy_transform, enemy) in enemy_query.iter() {
         // Check if enemy is alive
         if enemy.health <= 0 {
-            continue;
+            // Отправить событие ПЕРЕД despawn
+            enemy_killed_events.write(EnemyKilled {
+                position: enemy_transform.translation.truncate(),
+            });
+
+            commands.entity(entity).despawn();
+            continue;  // Пропускаем удалённого врага
         }
 
         // Calculate distance between player and enemy
@@ -71,7 +80,7 @@ pub fn enemy_damage(
         let distance = to_player.length();
 
         // If enemy is close enough, damage the player
-        if distance <= ENEMY_DAMAGE_RANGE {
+        if distance <= settings.ENEMY_DAMAGE_RANGE {
             // Apply damage every 1 second using the game state timer
             game_state.damage_timer += time.delta().as_secs_f32();
 
@@ -79,17 +88,41 @@ pub fn enemy_damage(
                 game_state.damage_timer = 0.0;
                 player.health -= 1;
 
+                info!("Player damaged! Health: {}", player.health);
+
+                // Отправить message для сброса комбо
+                player_damaged_events.write(PlayerDamaged { damage: 1 });
+
                 // Play hit sound when enemy damages player
                 commands.spawn(AudioPlayer::new(asset_server.load("enemy_hit.ogg")));
 
                 if player.health <= 0 && !game_state.victory && text_screen_query.count() == 0 {
-                    restart_game(
-                        &mut commands,
-                        &mut game_state,
-                        all_entities,
-                        ldtk_enemies_query,
-                        &asset_server,
-                    );
+                    info!("GAME OVER! Player died.");
+
+                    // Установить game_over - это заблокирует все movement/attack системы
+                    game_state.game_over = true;
+
+                    // Показать GAME OVER экран
+                    commands
+                        .spawn((
+                            Node {
+                                height: percent(100),
+                                width: percent(100),
+                                justify_content: JustifyContent::Center,
+                                align_items: AlignItems::Center,
+                                ..default()
+                            },
+                            BackgroundColor(Color::BLACK),
+                            GameEntity,
+                        ))
+                        .with_child((
+                            Text::new("GAME OVER\n\nPress R to restart"),
+                            TextFont {
+                                font_size: 48.0,
+                                ..default()
+                            },
+                            TextColor(Color::srgb(1.0, 0.0, 0.0)),
+                        ));
                 }
             }
         }

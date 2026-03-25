@@ -27,5 +27,8 @@ pub struct Collider {
 }
 
 /// Marker component for static wall entities.
-#[derive(Component)]
+#[derive(Component, Default)]
 pub struct Wall;
+
+#[derive(Component)]
+pub struct Goal;

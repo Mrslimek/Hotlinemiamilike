@@ -29,6 +29,7 @@ pub fn player_wall_collision(
     mut player_query: Query<(&mut Transform, &Collider), With<Player>>,
     wall_query: Query<(&Transform, &Collider), (With<Wall>, Without<Player>)>,
 ) {
+    // println!("{:?}", wall_query);
     let Ok((mut player_transform, player_collider)) = player_query.single_mut() else {
         return;
     };

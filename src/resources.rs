@@ -8,6 +8,13 @@ pub struct GameState {
     pub victory: bool,
     pub damage_timer: f32,
     pub enemies_remaining: usize,
+    pub reached_goal: bool,
+}
+
+#[derive(Resource)]
+pub struct LevelFlow {
+    pub total: usize,
+    pub index: usize,
 }
 
 pub fn setup_initial_state(

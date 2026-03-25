@@ -8,7 +8,7 @@ use bevy::prelude::AssetServer;
 use crate::{
     components::{Enemy, GameEntity},
     resources::{GameState, setup_initial_state},
-    setup::spawn_game_world,
+    // setup::spawn_game_world,
 };
 
 pub fn restart_game(
@@ -22,5 +22,5 @@ pub fn restart_game(
         commands.entity(entity).despawn();
     }
     setup_initial_state(game_state, enemy_query);
-    spawn_game_world(commands, asset_server);
+    // spawn_game_world(commands, asset_server);
 }
