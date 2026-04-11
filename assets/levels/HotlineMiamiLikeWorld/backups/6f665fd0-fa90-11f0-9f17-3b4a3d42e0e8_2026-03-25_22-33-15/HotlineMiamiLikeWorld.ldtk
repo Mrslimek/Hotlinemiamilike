@@ -11,7 +11,7 @@
 	"iid": "6f665fd0-fa90-11f0-9f17-3b4a3d42e0e8",
 	"jsonVersion": "1.5.3",
 	"appBuildId": 492663,
-	"nextUid": 30,
+	"nextUid": 28,
 	"identifierStyle": "Capitalize",
 	"toc": [],
 	"worldLayout": "Free",
@@ -33,7 +33,7 @@
 	"imageExportMode": "None",
 	"exportLevelBg": true,
 	"pngFilePattern": null,
-	"backupOnSave": true,
+	"backupOnSave": false,
 	"backupLimit": 10,
 	"backupRelPath": null,
 	"levelNamePattern": "Level_%idx",
@@ -488,45 +488,7 @@
 			"savedSelections": [],
 			"cachedPixelData": { "opaqueTiles": "0000", "averageColors": "4892589267937793" }
 		}
-	], "enums": [], "externalEnums": [], "levelFields": [
-		{
-			"identifier": "level_music",
-			"doc": "level music",
-			"__type": "String",
-			"uid": 29,
-			"type": "F_String",
-			"isArray": false,
-			"canBeNull": false,
-			"arrayMinLength": null,
-			"arrayMaxLength": null,
-			"editorDisplayMode": "Hidden",
-			"editorDisplayScale": 1,
-			"editorDisplayPos": "Above",
-			"editorLinkStyle": "StraightArrow",
-			"editorDisplayColor": null,
-			"editorAlwaysShow": false,
-			"editorShowInWorld": true,
-			"editorCutLongValues": true,
-			"editorTextSuffix": null,
-			"editorTextPrefix": null,
-			"useForSmartColor": false,
-			"exportToToc": false,
-			"searchable": false,
-			"min": null,
-			"max": null,
-			"regex": null,
-			"acceptFileTypes": null,
-			"defaultOverride": null,
-			"textLanguageMode": null,
-			"symmetricalRef": false,
-			"autoChainRef": true,
-			"allowOutOfLevelRef": true,
-			"allowedRefs": "OnlySame",
-			"allowedRefsEntityUid": null,
-			"allowedRefTags": [],
-			"tilesetUid": null
-		}
-	] },
+	], "enums": [], "externalEnums": [], "levelFields": [] },
 	"levels": [
 		{
 			"identifier": "Level_0",
@@ -547,10 +509,7 @@
 			"__smartColor": "#ADADB5",
 			"__bgPos": null,
 			"externalRelPath": null,
-			"fieldInstances": [{ "__identifier": "level_music", "__type": "String", "__value": "moon - dust.ogg", "__tile": null, "defUid": 29, "realEditorValues": [{
-				"id": "V_String",
-				"params": ["moon - dust.ogg"]
-			}] }],
+			"fieldInstances": [],
 			"layerInstances": [
 				{
 					"__identifier": "Enemy_sprite",
@@ -2082,7 +2041,7 @@
 			"__smartColor": "#ADADB5",
 			"__bgPos": null,
 			"externalRelPath": null,
-			"fieldInstances": [{ "__identifier": "level_music", "__type": "String", "__value": "", "__tile": null, "defUid": 29, "realEditorValues": [] }],
+			"fieldInstances": [],
 			"layerInstances": [
 				{
 					"__identifier": "Enemy_sprite",
@@ -3598,7 +3557,7 @@
 			"__smartColor": "#ADADB5",
 			"__bgPos": null,
 			"externalRelPath": null,
-			"fieldInstances": [{ "__identifier": "level_music", "__type": "String", "__value": "", "__tile": null, "defUid": 29, "realEditorValues": [] }],
+			"fieldInstances": [],
 			"layerInstances": [
 				{
 					"__identifier": "Enemy_sprite",
@@ -5098,7 +5057,7 @@
 			"__smartColor": "#ADADB5",
 			"__bgPos": null,
 			"externalRelPath": null,
-			"fieldInstances": [{ "__identifier": "level_music", "__type": "String", "__value": "", "__tile": null, "defUid": 29, "realEditorValues": [] }],
+			"fieldInstances": [],
 			"layerInstances": [
 				{
 					"__identifier": "Enemy_sprite",
@@ -6598,7 +6557,7 @@
 			"__smartColor": "#ADADB5",
 			"__bgPos": null,
 			"externalRelPath": null,
-			"fieldInstances": [{ "__identifier": "level_music", "__type": "String", "__value": "", "__tile": null, "defUid": 29, "realEditorValues": [] }],
+			"fieldInstances": [],
 			"layerInstances": [
 				{
 					"__identifier": "Enemy_sprite",
@@ -8098,7 +8057,7 @@
 			"__smartColor": "#ADADB5",
 			"__bgPos": null,
 			"externalRelPath": null,
-			"fieldInstances": [{ "__identifier": "level_music", "__type": "String", "__value": "", "__tile": null, "defUid": 29, "realEditorValues": [] }],
+			"fieldInstances": [],
 			"layerInstances": [
 				{
 					"__identifier": "Enemy_sprite",
@@ -9598,7 +9557,7 @@
 			"__smartColor": "#ADADB5",
 			"__bgPos": null,
 			"externalRelPath": null,
-			"fieldInstances": [{ "__identifier": "level_music", "__type": "String", "__value": "", "__tile": null, "defUid": 29, "realEditorValues": [] }],
+			"fieldInstances": [],
 			"layerInstances": [
 				{
 					"__identifier": "Enemy_sprite",
@@ -11098,7 +11057,7 @@
 			"__smartColor": "#ADADB5",
 			"__bgPos": null,
 			"externalRelPath": null,
-			"fieldInstances": [{ "__identifier": "level_music", "__type": "String", "__value": "", "__tile": null, "defUid": 29, "realEditorValues": [] }],
+			"fieldInstances": [],
 			"layerInstances": [
 				{
 					"__identifier": "Enemy_sprite",
@@ -12598,7 +12557,7 @@
 			"__smartColor": "#ADADB5",
 			"__bgPos": null,
 			"externalRelPath": null,
-			"fieldInstances": [{ "__identifier": "level_music", "__type": "String", "__value": "", "__tile": null, "defUid": 29, "realEditorValues": [] }],
+			"fieldInstances": [],
 			"layerInstances": [
 				{
 					"__identifier": "Enemy_sprite",
@@ -14098,7 +14057,7 @@
 			"__smartColor": "#ADADB5",
 			"__bgPos": null,
 			"externalRelPath": null,
-			"fieldInstances": [{ "__identifier": "level_music", "__type": "String", "__value": "", "__tile": null, "defUid": 29, "realEditorValues": [] }],
+			"fieldInstances": [],
 			"layerInstances": [
 				{
 					"__identifier": "Enemy_sprite",

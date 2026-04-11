@@ -2,10 +2,13 @@ use bevy::prelude::*;
 
 #[derive(Message)]
 pub struct EnemyKilled {
-    pub position: Vec2,
+    pub _position: Vec2,
 }
 
 #[derive(Message)]
 pub struct PlayerDamaged {
-    pub damage: i32,
+    pub _damage: i32,
 }
+
+#[derive(Message)]
+pub struct EnemyInProximity;

@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 
-use crate::components::{GameEntity, TextScreen};
-use crate::resources::GameState;
+// use crate::components::{GameEntity, TextScreen};
+// use crate::resources::GameState;
 use crate::score::ScoreState;
 use crate::settings::GameSettings;
 
@@ -9,38 +9,38 @@ use crate::settings::GameSettings;
 #[derive(Component)]
 pub struct GameUi;
 
-pub fn check_game_state(
-    mut commands: Commands,
-    mut game_state: ResMut<GameState>,
-    text_screen_query: Query<&TextScreen>,
-) {
-    if game_state.enemies_remaining <= 0
-        && !game_state.game_over
-        && !game_state.victory
-        && text_screen_query.count() == 0
-    {
-        let text_style = TextFont {
-            font_size: 42.0,
-            ..default()
-        };
+// pub fn check_game_state(
+//     mut commands: Commands,
+//     mut game_state: ResMut<GameState>,
+//     text_screen_query: Query<&TextScreen>,
+// ) {
+//     if game_state.enemies_remaining <= 0
+//         && !game_state.game_over
+//         && !game_state.victory
+//         && text_screen_query.count() == 0
+//     {
+//         let text_style = TextFont {
+//             font_size: 42.0,
+//             ..default()
+//         };
 
-        commands
-            .spawn((
-                Node {
-                    height: percent(100),
-                    width: percent(100),
-                    justify_content: JustifyContent::Center,
-                    align_items: AlignItems::Center,
-                    ..default()
-                },
-                BackgroundColor(Color::BLACK),
-                TextScreen,
-                GameEntity,
-            ))
-            .with_child((Text::new("YOU WIN!"), text_style.clone()));
-        game_state.victory = true;
-    }
-}
+//         commands
+//             .spawn((
+//                 Node {
+//                     height: percent(100),
+//                     width: percent(100),
+//                     justify_content: JustifyContent::Center,
+//                     align_items: AlignItems::Center,
+//                     ..default()
+//                 },
+//                 BackgroundColor(Color::BLACK),
+//                 TextScreen,
+//                 GameEntity,
+//             ))
+//             .with_child((Text::new("YOU WIN!"), text_style.clone()));
+//         game_state.victory = true;
+//     }
+// }
 
 pub fn setup_ui(mut commands: Commands) {
     // Создать отдельную камеру для UI (поверх игровой)
@@ -115,12 +115,12 @@ pub fn setup_ui(mut commands: Commands) {
         });
 }
 
-pub fn update_ui(
+pub fn process_ui_updates(
     score: Res<ScoreState>,
     settings: Res<GameSettings>,
     mut query: Query<&mut Text>,
 ) {
-    if !settings.SHOW_UI {
+    if !settings.ui.show_ui {
         return;  // Не обновлять если UI выключен
     }
 

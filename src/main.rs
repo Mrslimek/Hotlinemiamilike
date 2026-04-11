@@ -10,23 +10,23 @@ mod utils;
 mod messages;
 mod score;
 mod settings;
+mod music;
 
 use bevy::prelude::*;
 use bevy_ecs_ldtk::{LdtkPlugin, LevelSelection};
 
 use crate::collision::{enemy_wall_collision, player_wall_collision};
-use crate::enemy::{enemy_ai, enemy_damage};
-use crate::messages::{EnemyKilled, PlayerDamaged};
-use crate::player::{player_attack, player_movement};
-use crate::resources::{GameState, LevelFlow};
-use crate::score::{on_enemy_killed, on_player_damaged, update_combo_timer, ScoreState};
+use crate::enemy::{process_enemy_attack, process_enemy_ai, check_enemy_player_proximity};
+use crate::messages::{EnemyInProximity, EnemyKilled, PlayerDamaged};
+use crate::music::on_level_spawned;
+use crate::player::{process_player_attack, check_player_moved, process_player_death};
+use crate::resources::{CurrentMusic, GameState, LevelFlow};
+use crate::score::{on_enemy_killed, on_player_damaged, process_combo_timer, ScoreState};
 use crate::settings::GameSettings;
 use crate::setup::setup;
-use crate::systems::{apply_ldtk_entity_blueprints, camera_follow_player, check_restart_button, update_attack_cooldowns};
-use crate::ui::{setup_ui, update_ui};
-// use crate::systems::{check_restart_button, cleanup_dead_entities};
-// use crate::systems::{goal_interaction, advance_level_on_goal};
-// use crate::ui::check_game_state;
+use crate::systems::{apply_ldtk_entity_blueprints, check_restart_button, process_attack_cooldowns, process_camera_movement};
+use crate::ui::{setup_ui, process_ui_updates};
+use crate::systems::{process_goal_interaction};
 
 fn main() {
     App::new()
@@ -36,7 +36,7 @@ fn main() {
         .insert_resource(GameSettings::default())
         .insert_resource(LevelFlow {
             index: 0,
-            total: GameSettings::default().TOTAL_LEVELS,
+            total: GameSettings::default().game.total_levels,
         })
         .insert_resource(GameState {
             game_over: false,
@@ -46,37 +46,36 @@ fn main() {
             reached_goal: false,
         })
         .insert_resource(ScoreState::default())
-        .add_event::<EnemyKilled>()
-        .add_event::<PlayerDamaged>()
+        .insert_resource(CurrentMusic {
+            entity: Entity::PLACEHOLDER,
+            level_name: String::new(),
+        })
+        .add_message::<EnemyKilled>()
+        .add_message::<PlayerDamaged>()
+        .add_message::<EnemyInProximity>()
         .add_systems(Startup, (setup, setup_ui))
         .add_systems(
             Update,
             (
-                // КРИТИЧНО: Применяет LDtk entity blueprints (создаёт игрока, врагов, стены)
                 apply_ldtk_entity_blueprints,
-                // КРИТИЧНО: Камера следует за игроком
-                camera_follow_player,
-                // Важно: Обновляет кулдауны атаки
-                update_attack_cooldowns,
-                // Игровые системы
-                player_movement,
-                enemy_ai,
-                enemy_damage,
-                player_attack,
-                // Score системы
+                on_level_spawned,
+                process_camera_movement,
+                process_attack_cooldowns,
+                check_player_moved,
+                check_enemy_player_proximity,
+                process_enemy_ai,
+                process_enemy_attack,
+                process_player_attack,
                 on_enemy_killed,
                 on_player_damaged,
-                update_combo_timer,
-                // UI
-                update_ui,
-                // Рестарт на R
+                process_combo_timer,
+                process_ui_updates,
+                process_player_death,
                 check_restart_button,
-                // Коллизия (после движения)
-                player_wall_collision.after(player_movement),
-                enemy_wall_collision.after(enemy_ai),
-                // TODO: Level transition (позже)
-                // goal_interaction,
-                // advance_level_on_goal,
+                player_wall_collision.after(check_player_moved),
+                enemy_wall_collision.after(process_enemy_ai),
+                // TODO: process_level_transition should be implemented in process_goal_interaction later
+                process_goal_interaction,
             ),
         )
         .run();

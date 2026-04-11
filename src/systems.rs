@@ -5,30 +5,31 @@ use crate::{
     components::{AttackCooldown, Collider, Enemy, GameEntity, Goal, Player, Wall},
     resources::{GameState, LevelFlow},
     settings::GameSettings,
-    utils::restart_game,
+    // utils::restart_game,
 };
 
-pub fn update_attack_cooldowns(time: Res<Time>, mut cooldown_query: Query<&mut AttackCooldown>) {
+pub fn process_attack_cooldowns(time: Res<Time>, mut cooldown_query: Query<&mut AttackCooldown>) {
     for mut cooldown in cooldown_query.iter_mut() {
         cooldown.0.tick(time.delta());
     }
 }
-// TODO: Refactor this to use events system, not per frame calculations
-pub fn cleanup_dead_entities(
-    mut commands: Commands,
-    mut game_state: ResMut<GameState>,
-    enemy_query: Query<(Entity, &Enemy), With<Enemy>>,
-) {
-    // Clean up dead enemies and update counter
-    for (entity, enemy) in enemy_query.iter() {
-        if enemy.health <= 0 {
-            commands.entity(entity).despawn();
-            game_state.enemies_remaining -= 1;
-        }
-    }
-}
 
-pub fn camera_follow_player(
+// TODO: Refactor this to use events system, not per frame calculations
+// pub fn cleanup_dead_entities(
+//     mut commands: Commands,
+//     mut game_state: ResMut<GameState>,
+//     enemy_query: Query<(Entity, &Enemy), With<Enemy>>,
+// ) {
+//     // Clean up dead enemies and update counter
+//     for (entity, enemy) in enemy_query.iter() {
+//         if enemy.health <= 0 {
+//             commands.entity(entity).despawn();
+//             game_state.enemies_remaining -= 1;
+//         }
+//     }
+// }
+
+pub fn process_camera_movement(
     player_query: Query<&Transform, With<Player>>,
     mut camera_query: Query<&mut Transform, (With<Camera>, Without<Player>)>,
 ) {
@@ -43,35 +44,25 @@ pub fn camera_follow_player(
     camera.translation.y = player.translation.y;
 }
 
-pub fn advance_level_on_goal(
-    mut game_state: ResMut<GameState>,
-    mut level_flow: ResMut<LevelFlow>,
-    mut level_selection: ResMut<LevelSelection>,
-) {
-    if !game_state.reached_goal {
-        return;
-    }
-
-    game_state.reached_goal = false;
-
-    level_flow.index += 1;
-    if level_flow.index >= level_flow.total {
-        level_flow.index = 0;
-        info!("All levels completed. Looping back to level_0.");
-    } else {
-        info!("Loading level_{}...", level_flow.index);
-    }
-
-    *level_selection = LevelSelection::index(level_flow.index);
-}
-
-pub fn goal_interaction(
+pub fn process_goal_interaction(
     mut game_state: ResMut<GameState>,
     player_query: Query<&Transform, With<Player>>,
     goal_query: Query<&Transform, With<Goal>>,
+    mut level_flow: ResMut<LevelFlow>,
+    mut level_selection: ResMut<LevelSelection>,
 ) {
     if game_state.reached_goal {
-        return;
+        game_state.reached_goal = false;
+
+        level_flow.index += 1;
+        if level_flow.index >= level_flow.total {
+            level_flow.index = 0;
+            debug!("All levels completed. Looping back to level_0.");
+        } else {
+            debug!("Loading level_{}...", level_flow.index);
+        }
+
+        *level_selection = LevelSelection::index(level_flow.index);
     }
 
     let Ok(player) = player_query.single() else {
@@ -85,7 +76,7 @@ pub fn goal_interaction(
             .distance(goal.translation.truncate());
         if distance <= 20.0 {
             game_state.reached_goal = true;
-            info!("Goal reached!");
+            debug!("Goal reached!");
             break;
         }
     }
@@ -105,7 +96,7 @@ pub fn apply_ldtk_entity_blueprints(
                     Sprite::from_image(asset_server.load("player.png")),
                     Player { health: 3 },
                     AttackCooldown(Timer::from_seconds(
-                        settings.ATTACK_COOLDOWN,
+                        settings.player.attack_cooldown,
                         TimerMode::Once,
                     )),
                     Collider {
@@ -153,7 +144,6 @@ pub fn apply_ldtk_entity_blueprints(
     }
 }
 
-/// Система для обработки нажатия R и рестарта уровня
 pub fn check_restart_button(
     mut commands: Commands,
     mut game_state: ResMut<GameState>,
@@ -161,23 +151,19 @@ pub fn check_restart_button(
     keyboard: Res<ButtonInput<KeyCode>>,
     all_entities: Query<Entity, With<GameEntity>>,
 ) {
-    // Только если game_over и нажата R
     if game_state.game_over && keyboard.just_pressed(KeyCode::KeyR) {
-        info!("Restarting level...");
+        debug!("Restarting level...");
 
-        // Удалить все игровые entities
         for entity in all_entities.iter() {
             commands.entity(entity).despawn();
         }
 
-        // Сбросить состояние
         game_state.game_over = false;
         game_state.victory = false;
         game_state.damage_timer = 0.0;
         game_state.enemies_remaining = 0;
         game_state.reached_goal = false;
 
-        // Перезагрузить уровень (LDtk respawn'ит все entities)
         *level_selection = LevelSelection::index(0);
     }
 }
