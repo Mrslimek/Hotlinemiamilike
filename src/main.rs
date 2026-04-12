@@ -16,10 +16,10 @@ use bevy::prelude::*;
 use bevy_ecs_ldtk::{LdtkPlugin, LevelSelection};
 
 use crate::collision::{enemy_wall_collision, player_wall_collision};
-use crate::enemy::{process_enemy_attack, process_enemy_ai, check_enemy_player_proximity};
-use crate::messages::{EnemyInProximity, EnemyKilled, PlayerDamaged};
+use crate::enemy::{check_enemy_player_proximity, process_enemy_ai, process_enemy_attack, process_enemy_damaged, process_enemy_death};
+use crate::messages::{DamageEvent, EnemyDamaged, EnemyInProximity, EnemyKilled, PlayerDamaged};
 use crate::music::on_level_spawned;
-use crate::player::{process_player_attack, check_player_moved, process_player_death};
+use crate::player::{check_player_moved, process_player_attack, process_player_damaged, process_player_death};
 use crate::resources::{CurrentMusic, GameState, LevelFlow};
 use crate::score::{on_enemy_killed, on_player_damaged, process_combo_timer, ScoreState};
 use crate::settings::GameSettings;
@@ -52,25 +52,31 @@ fn main() {
         })
         .add_message::<EnemyKilled>()
         .add_message::<PlayerDamaged>()
+        .add_message::<EnemyDamaged>()
         .add_message::<EnemyInProximity>()
+        .add_message::<DamageEvent>()
         .add_systems(Startup, (setup, setup_ui))
         .add_systems(
             Update,
             (
                 apply_ldtk_entity_blueprints,
                 on_level_spawned,
-                process_camera_movement,
+                // FIXME: this system doesnt working
+                // process_camera_movement,
                 process_attack_cooldowns,
                 check_player_moved,
                 check_enemy_player_proximity,
                 process_enemy_ai,
                 process_enemy_attack,
+                process_enemy_damaged,
+                process_enemy_death,
                 process_player_attack,
+                process_player_damaged,
+                process_player_death,
                 on_enemy_killed,
                 on_player_damaged,
                 process_combo_timer,
                 process_ui_updates,
-                process_player_death,
                 check_restart_button,
                 player_wall_collision.after(check_player_moved),
                 enemy_wall_collision.after(process_enemy_ai),

@@ -2,7 +2,7 @@ use bevy::prelude::*;
 use bevy_ecs_ldtk::{EntityInstance, LevelSelection};
 
 use crate::{
-    components::{AttackCooldown, Collider, Enemy, GameEntity, Goal, Player, Wall},
+    components::{AttackCooldown, Collider, Damage, Enemy, GameEntity, Goal, Health, Player, Wall},
     resources::{GameState, LevelFlow},
     settings::GameSettings,
     // utils::restart_game,
@@ -94,7 +94,14 @@ pub fn apply_ldtk_entity_blueprints(
                 transform.translation.z = 10.0;
                 commands.entity(entity).insert((
                     Sprite::from_image(asset_server.load("player.png")),
-                    Player { health: 3 },
+                    Player,
+                    Health {
+                        max: 3,
+                        current: 3
+                    },
+                    Damage {
+                        amount: 1
+                    },
                     AttackCooldown(Timer::from_seconds(
                         settings.player.attack_cooldown,
                         TimerMode::Once,
@@ -108,7 +115,14 @@ pub fn apply_ldtk_entity_blueprints(
                 transform.translation.z = 10.0;
                 commands.entity(entity).insert((
                     Sprite::from_image(asset_server.load("enemy.png")),
-                    Enemy { health: 1 },
+                    Enemy,
+                    Health {
+                        max: 1,
+                        current: 1
+                    },
+                    Damage {
+                        amount: 1
+                    },
                     Collider {
                         half_size: Vec2::splat(8.0), // 16px sprite / 2 = 8px half-size
                     },
