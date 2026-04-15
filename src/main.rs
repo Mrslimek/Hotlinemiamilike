@@ -24,7 +24,7 @@ use crate::resources::{CurrentMusic, GameState, LevelFlow};
 use crate::score::{on_enemy_killed, on_player_damaged, process_combo_timer, ScoreState};
 use crate::settings::GameSettings;
 use crate::setup::setup;
-use crate::systems::{apply_ldtk_entity_blueprints, check_restart_button, process_attack_cooldowns, process_camera_movement};
+use crate::systems::{apply_ldtk_entity_blueprints, check_restart_button, process_attack_cooldowns, process_bullet_collision, process_bullet_movement, process_weapon_pickup};
 use crate::ui::{setup_ui, process_ui_updates};
 use crate::systems::{process_goal_interaction};
 
@@ -56,33 +56,40 @@ fn main() {
         .add_message::<EnemyInProximity>()
         .add_message::<DamageEvent>()
         .add_systems(Startup, (setup, setup_ui))
-        .add_systems(
-            Update,
-            (
-                apply_ldtk_entity_blueprints,
-                on_level_spawned,
-                // FIXME: this system doesnt working
-                // process_camera_movement,
-                process_attack_cooldowns,
-                check_player_moved,
-                check_enemy_player_proximity,
-                process_enemy_ai,
-                process_enemy_attack,
-                process_enemy_damaged,
-                process_enemy_death,
-                process_player_attack,
-                process_player_damaged,
-                process_player_death,
-                on_enemy_killed,
-                on_player_damaged,
-                process_combo_timer,
-                process_ui_updates,
-                check_restart_button,
-                player_wall_collision.after(check_player_moved),
-                enemy_wall_collision.after(process_enemy_ai),
-                // TODO: process_level_transition should be implemented in process_goal_interaction later
-                process_goal_interaction,
-            ),
+        .add_systems(Update, (
+            apply_ldtk_entity_blueprints,
+            on_level_spawned,
+            process_weapon_pickup,
+            process_attack_cooldowns,
+            check_player_moved,
+            check_enemy_player_proximity,
+            process_enemy_ai,
+            process_enemy_attack,
+            process_enemy_damaged,
+            process_enemy_death,
+        ))
+        .add_systems(Update, (
+            process_player_attack,
+            process_player_damaged,
+            process_player_death,
+            on_enemy_killed,
+            on_player_damaged,
+            process_combo_timer,
+            process_ui_updates,
+            check_restart_button,
+        ))
+        .add_systems(Update,
+            player_wall_collision.after(check_player_moved),
         )
+        .add_systems(Update,
+            enemy_wall_collision.after(process_enemy_ai),
+        )
+        .add_systems(Update,
+            process_bullet_movement.after(process_player_attack),
+        )
+        .add_systems(Update,
+            process_bullet_collision.after(process_bullet_movement),
+        )
+        .add_systems(Update, process_goal_interaction)
         .run();
 }

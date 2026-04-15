@@ -20,19 +20,45 @@ pub struct Health {
     pub max: i32,
 }
 
+// ========== WEAPON SYSTEM ==========
+
+/// Marker that player has a weapon
 #[derive(Component)]
-pub struct Weapon {
+pub struct Weapon;
+
+#[derive(Component, Clone, Copy)]
+pub struct MeleeWeapon {
     pub damage: i32,
-    pub weapon_type: WeaponType,
     pub range: f32,
-    pub cooldown: Timer,
+    pub attack_speed: f32,
+    pub knockback: f32,
 }
 
-#[derive(Clone, Debug)]
-pub enum WeaponType {
-    Melee { knockback: f32 },
-    Ranged { speed: f32, spread: f32 },
+#[derive(Component, Clone, Copy)]
+pub struct Firearm {
+    pub damage: i32,
+    pub fire_rate: f32,
+    pub bullet_speed: f32,
+    pub spread: f32,
 }
+
+#[derive(Component, Clone, Copy)]
+pub struct Ammo {
+    pub current: i32,
+    pub max: i32,
+}
+
+#[derive(Component)]
+pub struct Bullet {
+    pub velocity: Vec2,
+    pub damage: i32,
+    pub owner: Entity, // Player or enemy who shot it
+    pub lifetime: Timer,
+}
+
+/// Marker for weapon pickup items in LDtk
+#[derive(Component)]
+pub struct WeaponPickup;
 
 #[derive(Component)]
 pub struct AttackCooldown(pub Timer);
