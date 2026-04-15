@@ -9,6 +9,7 @@ use crate::{
 };
 
 pub fn process_attack_cooldowns(time: Res<Time>, mut cooldown_query: Query<&mut AttackCooldown>) {
+    // TODO: Add some animation (dev purpose) to show this cooldown
     for mut cooldown in cooldown_query.iter_mut() {
         cooldown.0.tick(time.delta());
     }
@@ -88,6 +89,7 @@ pub fn apply_ldtk_entity_blueprints(
     settings: Res<GameSettings>,
     mut query: Query<(Entity, &EntityInstance, &mut Transform), Added<EntityInstance>>,
 ) {
+    // TODO: Check why this should run every frame
     for (entity, instance, mut transform) in query.iter_mut() {
         match instance.identifier.as_str() {
             "Player" => {

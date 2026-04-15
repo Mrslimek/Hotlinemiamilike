@@ -16,6 +16,7 @@ pub fn on_level_spawned(
     mut current_music: ResMut<CurrentMusic>,
     mut commands: Commands,
 ) {
+    // TODO: This is fully vibecoded, check this code
     for event in events.read() {
         if let LevelEvent::Spawned(spawned_iid) = event {
             // Get the LDtk project handle from the entity

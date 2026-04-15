@@ -137,6 +137,8 @@ pub fn process_enemy_damaged (
     mut health_query: Query<&mut Health, With<Enemy>>,
 ) {
     for event in damage_events.read() {
+        // TODO: Check if we can make this a little bit more readable by marking type of damaged entity,
+        // because currently we only rely on health With<Enemy> which is completely okay, but a little bit confusing
         if let Ok(mut health) = health_query.get_mut(event.target) {
             health.current -= event.amount;
             enemy_damaged_events.write(EnemyDamaged {
