@@ -12,7 +12,9 @@ mod score;
 mod settings;
 mod music;
 
+use bevy::diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin};
 use bevy::prelude::*;
+use bevy::window::{PresentMode, WindowResolution};
 use bevy_ecs_ldtk::{LdtkPlugin, LevelSelection};
 
 use crate::collision::{enemy_wall_collision, player_wall_collision};
@@ -24,13 +26,27 @@ use crate::resources::{CurrentMusic, GameState, LevelFlow};
 use crate::score::{on_enemy_killed, on_player_damaged, process_combo_timer, ScoreState};
 use crate::settings::GameSettings;
 use crate::setup::setup;
-use crate::systems::{apply_ldtk_entity_blueprints, check_restart_button, process_attack_cooldowns, process_bullet_collision, process_bullet_movement, process_weapon_pickup};
+use crate::systems::{apply_ldtk_entity_blueprints, camera_follow_player, check_restart_button, process_attack_cooldowns, process_bullet_collision, process_bullet_movement, process_weapon_pickup};
 use crate::ui::{setup_ui, process_ui_updates};
 use crate::systems::{process_goal_interaction};
 
 fn main() {
     App::new()
-        .add_plugins(DefaultPlugins)
+        .add_plugins(DefaultPlugins.set(WindowPlugin {
+            primary_window: Some(Window {
+                title: "Hotline Miami Like".to_string(),
+                resolution: WindowResolution::new(1600, 1000)
+                // resolution: WindowResolution::new(640, 480)
+                    .with_scale_factor_override(1.0),
+                resizable: true,
+                mode: bevy::window::WindowMode::Windowed,
+                present_mode: PresentMode::AutoVsync,
+                ..Default::default()
+            }),
+            ..Default::default()
+        }))
+        .add_plugins(FrameTimeDiagnosticsPlugin::default())
+        .add_plugins(LogDiagnosticsPlugin::default())
         .add_plugins(LdtkPlugin)
         .insert_resource(LevelSelection::index(0))
         .insert_resource(GameSettings::default())
@@ -84,6 +100,7 @@ fn main() {
         .add_systems(Update,
             enemy_wall_collision.after(process_enemy_ai),
         )
+        .add_systems(Update, camera_follow_player.after(check_player_moved))
         .add_systems(Update,
             process_bullet_movement.after(process_player_attack),
         )

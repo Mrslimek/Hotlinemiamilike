@@ -43,16 +43,6 @@ pub struct GameUi;
 // }
 
 pub fn setup_ui(mut commands: Commands) {
-    // Создать отдельную камеру для UI (поверх игровой)
-    commands.spawn((
-        Camera2d,
-        Camera {
-            order: 1,  // Поверх игровой камеры (order: 0)
-            ..default()
-        },
-    ));
-
-    // Создать контейнер для UI
     commands
         .spawn((
             Node {

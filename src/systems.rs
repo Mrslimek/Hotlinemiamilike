@@ -6,6 +6,7 @@ use crate::{
     messages::DamageEvent,
     resources::{GameState, LevelFlow},
     settings::GameSettings,
+    setup::MainCamera,
 };
 
 // Helper type for weapon queries
@@ -33,19 +34,36 @@ pub fn process_attack_cooldowns(time: Res<Time>, mut cooldown_query: Query<&mut 
 //     }
 // }
 
-pub fn process_camera_movement(
-    player_query: Query<&Transform, With<Player>>,
-    mut camera_query: Query<&mut Transform, (With<Camera>, Without<Player>)>,
+pub fn camera_follow_player(
+    player_query: Query<&GlobalTransform, With<Player>>,
+    mut camera_query: Query<&mut Transform, With<MainCamera>>,
 ) {
-    let Ok(player) = player_query.single() else {
-        return;
-    };
-    let Ok(mut camera) = camera_query.single_mut() else {
-        return;
-    };
+    let player_result = player_query.single();
+    let camera_result = camera_query.single_mut();
 
-    camera.translation.x = player.translation.x;
-    camera.translation.y = player.translation.y;
+    match (player_result, camera_result) {
+        (Ok(player_global_transform), Ok(mut camera_transform)) => {
+            let player_pos = player_global_transform.translation();
+            let old_cam_pos = camera_transform.translation;
+
+            camera_transform.translation.x = player_pos.x;
+            camera_transform.translation.y = player_pos.y;
+
+            if old_cam_pos != camera_transform.translation {
+                info!("Camera following: player at ({}, {}), camera moved from ({}, {}) to ({}, {})",
+                    player_pos.x, player_pos.y,
+                    old_cam_pos.x, old_cam_pos.y,
+                    camera_transform.translation.x, camera_transform.translation.y
+                );
+            }
+        }
+        (Err(e), _) => {
+            warn!("Camera follow: Failed to query player: {:?}", e);
+        }
+        (_, Err(e)) => {
+            warn!("Camera follow: Failed to query camera: {:?}", e);
+        }
+    }
 }
 
 pub fn process_goal_interaction(
